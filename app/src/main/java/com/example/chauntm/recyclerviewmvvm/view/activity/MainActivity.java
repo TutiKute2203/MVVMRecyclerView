@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import com.example.chauntm.recyclerviewmvvm.R;
 import com.example.chauntm.recyclerviewmvvm.model.User;
 import com.example.chauntm.recyclerviewmvvm.view.adapter.MyAdapter;
+import com.example.chauntm.recyclerviewmvvm.viewModel.MainActivityViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 	@Bind(R.id.swipe_container)
 	SwipeRefreshLayout mSwipeRefreshLayout;
 
-	private List<User> mUsers;
-	private MyAdapter mAdapter;
+	MainActivityViewModel viewModel;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,39 +38,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 		setContentView(R.layout.activity_main);
 		ButterKnife.bind(this);
 
-		setUpData();
+		viewModel = new MainActivityViewModel(this);
 		setupRecyclerView();
 		mSwipeRefreshLayout.setOnRefreshListener(this);
-	}
-
-	private void setUpData() {
-		mUsers = new ArrayList<>();
-		mUsers.add(new User("Hue"));
-		mUsers.add(new User("Hang"));
-		mUsers.add(new User("Hong"));
-		mUsers.add(new User("Cuc"));
-		mUsers.add(new User("Lan"));
-		mUsers.add(new User("Sen"));
-		mUsers.add(new User("Ly"));
 	}
 
 	private void setupRecyclerView() {
 		mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 		mRecyclerView.setHasFixedSize(true);
-		mAdapter = new MyAdapter(this, mUsers);
-		mRecyclerView.setAdapter(mAdapter);
+		viewModel.setupRecyclerView();
+		mRecyclerView.setAdapter(viewModel.getAdapter());
 	}
 
 	@Override
 	public void onRefresh() {
-		mUsers.clear();
-		mUsers.add(new User("Hue1"));
-		mUsers.add(new User("Hang1"));
-		mUsers.add(new User("Hong1"));
-		mUsers.add(new User("Cuc1"));
-		mUsers.add(new User("Lan1"));
-		mUsers.add(new User("Sen1"));
-		mUsers.add(new User("Ly1"));
 	}
 
 }
