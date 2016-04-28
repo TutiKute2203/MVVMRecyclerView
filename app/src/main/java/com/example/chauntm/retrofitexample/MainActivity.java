@@ -2,7 +2,10 @@ package com.example.chauntm.retrofitexample;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatSpinner;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.example.chauntm.data.CurrentWeather;
@@ -15,7 +18,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
 	final WeatherService service = ServiceFactory.createRetrofitService(WeatherService.class, WeatherService.SERVICE_ENDPOINT);
 	final String TAG = MainActivity.class.getSimpleName();
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 	@Bind(R.id.txt_humidity) TextView mHumidityTV;
 	@Bind(R.id.txt_press) TextView mPressureTV;
 	@Bind(R.id.txt_forecast) TextView mForecastTV;
+	@Bind(R.id.spinner) AppCompatSpinner mCitySpinner;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		ButterKnife.bind(this);
-		getWeather();
-		getForecast();
+		getWeather(String.valueOf(mCitySpinner.getSelectedItem()));
+		mCitySpinner.setOnItemSelectedListener(this);
 	}
 
-	private void getWeather() {
-		Observable<CurrentWeather> currentWeather = service.getWheatherReport("London");
+	private void getWeather(String city) {
+		Observable<CurrentWeather> currentWeather = service.getWheatherReport(city);
 		currentWeather.subscribeOn(Schedulers.newThread())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<CurrentWeather>() {
@@ -61,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
 				});
 	}
 
-	private void getForecast() {
-		service.getForecast("London").subscribeOn(Schedulers.io())
+	private void getForecast(String city) {
+		service.getForecast(city).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<Forecast>() {
 					@Override
@@ -81,6 +85,18 @@ public class MainActivity extends AppCompatActivity {
 						mForecastTV.setText("forecast : " + forecast.getCity().getCountry());
 					}
 				});
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+			getWeather(String.valueOf(mCitySpinner.getSelectedItem()));
+			getForecast(String.valueOf(mCitySpinner.getSelectedItem()));
+
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+
 	}
 
 }

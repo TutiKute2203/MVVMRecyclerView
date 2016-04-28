@@ -13,9 +13,9 @@ import rx.Observable;
 public interface WeatherService {
 	String SERVICE_ENDPOINT = "http://api.openweathermap.org/data/2.5/";
 
-	@GET("weather?appid=312df3766af981efa13d42ee3e42d310&")
+	@GET("weather?")
 	Observable<CurrentWeather> getWheatherReport(@Query("q") String city);
 
-	@GET("forecast?appid=312df3766af981efa13d42ee3e42d310&mode=json&")
+	@GET("forecast?mode=json&")
 	Observable<Forecast> getForecast(@Query("q") String city);
 }
